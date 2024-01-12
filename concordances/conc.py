@@ -52,7 +52,7 @@ def get_concordances(corpus, query, limit=5000, window=20):
 def print_concordances(conc):
     for row in conc.show(n=min(limit_conc, conc.size), style = False).iterrows():
         urn = row[1]["urn"]
-        metadata = corpus[corpus["urn"] == urn][['title', 'authors', 'year', 'timestamp']]
+        metadata = corpus[corpus["urn"] == urn][['title', 'author', 'year', 'timestamp']]
         metadata = metadata.iloc[0]
 
         if 'digavis' in urn:
@@ -60,13 +60,13 @@ def print_concordances(conc):
         else:
             timestamp = metadata["year"]
 
-        if metadata["authors"] is None:
-            metadata["authors"] = ""
+        if metadata["author"] is None:
+            metadata["author"] = ""
         if metadata["title"] is None:
             metadata["title"] = ""
 
         url = "https://urn.nb.no/%s" % (urn)
-        link = "<a href='%s' target='_blank'>%s – %s – %s</a>" % (url, metadata["title"], metadata["authors"], timestamp)
+        link = "<a href='%s' target='_blank'>%s – %s – %s</a>" % (url, metadata["title"], metadata["author"], timestamp)
 
         conc_markdown = row[1]["concordance"].replace('<b>', '**')
         conc_markdown = conc_markdown.replace('</b>', '**')
@@ -96,7 +96,7 @@ if st.session_state.corpus_upload is None:
         fulltext = st.text_input("Som inneholder fulltekst (kan stå tomt)", placeholder="jakt AND fiske", help="""Tar bare med dokumenter som inneholder ordene i dette feltet. Spørringene kan innehold enkeltord kombinert med logiske operatorer, f.eks. jakt AND fiske_, _jakt OR fiske_, fraser som "i forhold til" eller nærhetsspørringer: _NEAR(jakt fiske, 5)_. Sistnevnte finner dokumenter hvor to ord _jakt_ and _fiske_ opptrer innenfor et vindu av fem ord.""")
         from_year = st.number_input('Fra år', min_value=1500, max_value=2030, value=1990)
         to_year = st.number_input('Til år', min_value=1500, max_value=2030, value=2020)
-        freetext = st.text_input("Metadata (kan stå tomt)", placeholder="""ddc:\"641.5\" """, help="""Forenklet metadatasøk. Ved å søke på enkeltord eller fraser søkes innenfor alle felt i metadatabasen. Du kan begrense spørringen til enkeltflet ved å bruke nøkkel:verdi-notasjon, f.eks. title:fisk finner alle dokumenter med _fisk_ i tittelen. Felt som kan brukes i spørringen er: _title_, _authors_, _urn_, _city_, _timestamp_ (YYYYMMDD), _year (YYYY)_, _publisher_, _langs_, _subjects_, _ddc_, _genres_, _literaryform_, _doctype_. Søk som inneholder tegnsetting, må generelt omgis med anførselstegn, f.eks. ddc: "641.5". Kombinasjoner er mulig: title:fisk AND ddc:"641.5".""")
+        freetext = st.text_input("Metadata (kan stå tomt)", placeholder="""ddc:\"641.5\" """, help="""Forenklet metadatasøk. Ved å søke på enkeltord eller fraser søkes innenfor alle felt i metadatabasen. Du kan begrense spørringen til enkeltflet ved å bruke nøkkel:verdi-notasjon, f.eks. title:fisk finner alle dokumenter med _fisk_ i tittelen. Felt som kan brukes i spørringen er: _title_, _author_, _urn_, _city_, _timestamp_ (YYYYMMDD), _year (YYYY)_, _publisher_, _langs_, _subjects_, _ddc_, _genres_, _literaryform_, _doctype_. Søk som inneholder tegnsetting, må generelt omgis med anførselstegn, f.eks. ddc: "641.5". Kombinasjoner er mulig: title:fisk AND ddc:"641.5".""")
         limit = st.number_input('Antall dokumenter i sample', value=1000)
         submit_button = st.form_submit_button(label='Bygg korpus!')
 
